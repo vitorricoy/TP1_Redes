@@ -21,7 +21,7 @@ void converterEnderecoParaString(const struct sockaddr *endereco, char *string, 
         if(!inet_ntop(AF_INET, &(enderecov4->sin_addr), stringEndereco, INET_ADDRSTRLEN + 1)) {
             sairComMensagem("Erro ao converter endereço para string com o comando ntop");
         }
-        porta = ntohs(addr4->sin_port); // network to host short
+        porta = ntohs(enderecov4->sin_port); // network to host short
     } else {
         if(endereco->sa_family == AF_INET6) {
             versao = 6;

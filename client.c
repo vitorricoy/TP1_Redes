@@ -1,3 +1,5 @@
+#include "common.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -34,19 +36,18 @@ void inicializarDadosSocket(const char *enderecoStr, const char *portaStr, struc
     porta = htons(porta); // host to network short
 
     struct in_addr inaddr4; // 32-bit IP address
-    if(inet_pton(AF_INET, addrstr, &inaddr4)) {
-        struct sockaddr_in *addr4 = (struct sockaddr_in *)storage;
-        addr4->sin_family = AF_INET;
-        addr4->sin_port = port;
-        addr4->sin_addr = inaddr4;
+    if(inet_pton(AF_INET, enderecoStr, &inaddr4)) {
+        struct sockaddr_in *dadosSocketv4 = (struct sockaddr_in*)dadosSocket;
+        dadosSocketv4->sin_family = AF_INET;
+        dadosSocketv4->sin_port = porta;
+        dadosSocketv4->sin_addr = inaddr4;
     } else {
         struct in6_addr inaddr6; // 128-bit IPv6 address
-        if (inet_pton(AF_INET6, addrstr, &inaddr6)) {
-            struct sockaddr_in6 *addr6 = (struct sockaddr_in6 *)storage;
-            addr6->sin6_family = AF_INET6;
-            addr6->sin6_port = port;
-            // addr6->sin6_addr = inaddr6
-            memcpy(&(addr6->sin6_addr), &inaddr6, sizeof(inaddr6));
+        if (inet_pton(AF_INET6, enderecoStr, &inaddr6)) {
+            struct sockaddr_in6 *dadosSocketv6 = (struct sockaddr_in6*)dadosSocket;
+            dadosSocketv6->sin6_family = AF_INET6;
+            dadosSocketv6->sin6_port = porta;
+            memcpy(&(dadosSocketv6->sin6_addr), &inaddr6, sizeof(inaddr6));
         } else {
             tratarParametroIncorreto(comandoPrograma);
         }
@@ -62,14 +63,14 @@ int main(int argc, char **argv) {
 		struct sockaddr_storage dadosSocket;
 		inicializarDadosSocket(argv[1], argv[2], &dadosSocket, argv[0]);
 
-		int socket;
-		socket = socket(storage.ss_family, SOCK_STREAM, 0);
-		if(socket == -1) {
+		int socketCliente;
+		socketCliente = socket(dadosSocket.ss_family, SOCK_STREAM, 0);
+		if(socketCliente == -1) {
 			sairComMensagem("Erro ao iniciar o socket");
 		}
 
-		struct sockaddr *enderecoSocket = (struct sockaddr *)(&dadosSocket);
-		if(connect(s, enderecoSocket, sizeof(dadosSocket)) != 0) {
+		struct sockaddr *enderecoSocket = (struct sockaddr*)(&dadosSocket);
+		if(connect(socketCliente, enderecoSocket, sizeof(dadosSocket)) != 0) {
 			sairComMensagem("Erro ao conectar no servidor");
 		}
 
@@ -83,7 +84,7 @@ int main(int argc, char **argv) {
 		fgets(mensagem, BUFSZ-1, stdin);
 		size_t tamanhoMensagemEnviada = send(socket, mensagem, strlen(mensagem)+1, 0);
 
-		if (count != strlen(mensagem)+1) {
+		if (strlen(mensagem) != tamanhoMensagemEnviada) {
 			sairComMensagem("Erro ao enviar mensagem");
 		}
 

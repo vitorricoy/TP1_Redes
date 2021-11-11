@@ -1,10 +1,14 @@
+#include "common.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <ctype.h>
 
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <arpa/inet.h>
 
 #define BUFSZ 512
 #define TAM_POKEDEX 40
@@ -38,13 +42,13 @@ void inicializarDadosSocket(const char* protocolo, const char* portaStr, struct 
         struct sockaddr_in *dadosSocketv4 = (struct sockaddr_in*)dadosSocket;
         dadosSocketv4->sin_family = AF_INET;
         dadosSocketv4->sin_addr.s_addr = INADDR_ANY;
-        dadosSocketv4->sin_port = port;
+        dadosSocketv4->sin_port = porta;
     } else {
         if(strcmp(protocolo, "v6") == 0) {
-            struct sockaddr_in6 *dadosSocketv6 = (struct sockaddr_in6*)storage;
+            struct sockaddr_in6 *dadosSocketv6 = (struct sockaddr_in6*)dadosSocket;
             dadosSocketv6->sin6_family = AF_INET6;
             dadosSocketv6->sin6_addr = in6addr_any;
-            dadosSocketv6->sin6_port = port;
+            dadosSocketv6->sin6_port = porta;
         } else {
             tratarParametroIncorreto(comandoPrograma);
         }
@@ -66,15 +70,15 @@ char* extrairStringAteEspacoRetornaStringDepoisDoEspaço(char* string, char* des
     return NULL;
 }
 
-bool mensagemInvalida(char* mensagem) {
-    int tamanhoMensagem = len(mensagem);
+int mensagemInvalida(char* mensagem) {
+    int tamanhoMensagem = strlen(mensagem);
     int posicao;
     for(posicao = 0; posicao < tamanhoMensagem; posicao++) {
         if((!isalnum(mensagem[posicao]) && mensagem[posicao] != ' ') || (mensagem[posicao] >= 'A' && mensagem[posicao] <= 'Z')) { // letra minuscula, numero ou espaço
-            return true;
+            return 1;
         }
     }
-    return false;
+    return 0;
 }
 
 // Considera que ja fez a busca antes
@@ -129,7 +133,7 @@ void listPokemon(char** pokedex, char* dest, int* proximaPosicao) {
 void enviarMensagem(char* mensagem, int socketCliente) {
     strcat(mensagem, "\n");
     size_t tamanhoMensagemEnviada = send(socketCliente, mensagem, strlen(mensagem), 0);
-    if (count != strlen(mensagem)) {
+    if (strlen(mensagem) != tamanhoMensagemEnviada) {
         sairComMensagem("Erro ao enviar mensagem ao cliente");
     }
 }
@@ -142,15 +146,15 @@ int main(int argc, char** argv) {
     
     inicializarDadosSocket(argv[1], argv[2], &dadosSocket, argv[0]);
 
-    int socket;
-    socket = socket(dadosSocket.ss_family, SOCK_STREAM, 0);
+    int socketServidor;
+    socketServidor = socket(dadosSocket.ss_family, SOCK_STREAM, 0);
 
-    if(socket == -1) {
+    if(socketServidor == -1) {
         sairComMensagem("Erro ao iniciar o socket");
     }
 
     int enable = 1;
-    if(setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) != 0) {
+    if(setsockopt(socketServidor, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) != 0) {
         sairComMensagem("Erro ao definir as opcoes do socket");
     }
 
@@ -174,11 +178,11 @@ int main(int argc, char** argv) {
     while (1) {
         struct sockaddr_storage dadosSocketCliente;
         struct sockaddr* enderecoSocketCliente = (struct sockaddr*)(&dadosSocketCliente);
-        sockeln_t tamanhoEnderecoSocketCliente = sizeof(enderecoSocketCliente);
+        socklen_t tamanhoEnderecoSocketCliente = sizeof(enderecoSocketCliente);
 
-        int socketCliente = accept(socket, enderecoSocketCliente, &tamanhoEnderecoSocketCliente);
+        int socketCliente = accept(socketServidor, enderecoSocketCliente, &tamanhoEnderecoSocketCliente);
 
-        if(socketcliente == -1) {
+        if(socketCliente == -1) {
             sairComMensagem("Erro ao aceitar a conexao de um cliente");
         }
 
@@ -200,7 +204,7 @@ int main(int argc, char** argv) {
         mensagem[tamanhoMensagem] = '\0';
 
         // TODO: Alterar para imprimir apenas a mensagem
-        printf("Recebido %d bytes: %s\n", enderecoClienteStr, (int)tamanhoMensagem, mensagem)
+        printf("Recebido %d bytes: %s\n", (int)tamanhoMensagem, mensagem);
 
         if(mensagemInvalida(mensagem)) {
             // Envia erro de mensagem invalida
@@ -210,8 +214,8 @@ int main(int argc, char** argv) {
         }
 
         char *p;
-        bool recebeuMensagemEncerramento = false;
-        for(p = strtok(s, "\n"); p != NULL; p = strtok(NULL, "\n")) {
+        int recebeuMensagemEncerramento = 0;
+        for(p = strtok(mensagem, "\n"); p != NULL; p = strtok(NULL, "\n")) {
             char operacao[BUFSZ];
             if(p == NULL) {
                 // Envia erro de mensagem invalida
@@ -223,11 +227,11 @@ int main(int argc, char** argv) {
             char* p = extrairStringAteEspacoRetornaStringDepoisDoEspaço(p, operacao);
             if(strcmp(operacao, "add") == 0) {
                 char pokemon[BUFSZ];
-                bool entrouUmaVez = false;
+                int entrouUmaVez = 0;
                 char mensagemResposta[BUFSZ];
                 memset(mensagemResposta, 0, sizeof(mensagemResposta));
                 while(p != NULL) {
-                    entrouUmaVez = true;
+                    entrouUmaVez = 1;
                     memset(pokemon, 0, sizeof(pokemon));
                     p = extrairStringAteEspacoRetornaStringDepoisDoEspaço(p, pokemon);
                     if(strlen(pokemon) > 10) {
@@ -325,7 +329,7 @@ int main(int argc, char** argv) {
                     continue;
                 }
                 p = extrairStringAteEspacoRetornaStringDepoisDoEspaço(p, newPokemon);
-                int posicaoPokemon = buscarPokemon(pokedex, , &proximaPosicaoPokedex);
+                int posicaoPokemon = buscarPokemon(pokedex, oldPokemon, &proximaPosicaoPokedex);
                 if(posicaoPokemon != -1) {
                     pokedex[posicaoPokemon] = newPokemon;
                     // Enviar mensagem de troca
@@ -339,7 +343,7 @@ int main(int argc, char** argv) {
                     enviarMensagem(resposta, socketCliente);
                 }
             } else if(strcmp(operacao, "kill") == 0) {
-                recebeuMensagemEncerramento = true;
+                recebeuMensagemEncerramento = 1;
                 break;
             } else {
                 // Envia erro de mensagem invalida
@@ -348,7 +352,7 @@ int main(int argc, char** argv) {
                 enviarMensagem(resposta, socketCliente);
             }
         }
-        close(csock);
+        close(socketCliente);
         if(recebeuMensagemEncerramento) {
             break;
         }
