@@ -1,3 +1,7 @@
+O servidor precisa imprimir apenas as mensagens recebidas?
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 O que fazer caso o cliente envie multiplas mensagens em pacotes separados? Por exemplo ele envia "add charmander\nadd pikachu\n" como
 "add charma" "nder\nadd p" "ikachu\n"
 
@@ -27,3 +31,7 @@ O cliente não pode enviar letras maiusculas? Porque tem uma orientação para e
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 A lista de adicionados pode terminar com um espaço? Ex.: "pikachu added raichu added \n" mesma coisa para o list
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+O cliente pode se desconectar do servidor a cada mensagem ou é um requisito que a mesma conexão seja mantida?

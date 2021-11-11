@@ -58,49 +58,48 @@ int main(int argc, char **argv) {
 
 	verificarParametros(argc, argv);
 
-	struct sockaddr_storage dadosSocket;
-    inicializarDadosSocket(argv[1], argv[2], &dadosSocket, argv[0]);
+	while(1) {
+		struct sockaddr_storage dadosSocket;
+		inicializarDadosSocket(argv[1], argv[2], &dadosSocket, argv[0]);
 
-	int socket;
-	socket = socket(storage.ss_family, SOCK_STREAM, 0);
-	if(socket == -1) {
-		sairComMensagem("Erro ao iniciar o socket");
+		int socket;
+		socket = socket(storage.ss_family, SOCK_STREAM, 0);
+		if(socket == -1) {
+			sairComMensagem("Erro ao iniciar o socket");
+		}
+
+		struct sockaddr *enderecoSocket = (struct sockaddr *)(&dadosSocket);
+		if(connect(s, enderecoSocket, sizeof(dadosSocket)) != 0) {
+			sairComMensagem("Erro ao conectar no servidor");
+		}
+
+		char enderecoStr[BUFSZ];
+		converterEnderecoParaString(enderecoSocket, enderecoStr, BUFSZ);
+
+		printf("Conectado ao endereco %s\n", enderecoStr);
+
+		char mensagem[BUFSZ];
+		memset(mensagem, 0, sizeof(mensagem));
+		fgets(mensagem, BUFSZ-1, stdin);
+		size_t tamanhoMensagemEnviada = send(socket, mensagem, strlen(mensagem)+1, 0);
+
+		if (count != strlen(mensagem)+1) {
+			sairComMensagem("Erro ao enviar mensagem");
+		}
+
+        memset(mensagem, 0, sizeof(mensagem));
+        size_t tamanhoMensagem = 0;
+        while(1) {
+            size_t tamanhoLidoAgora = recv(socketCliente, mensagem+tamanhoMensagem, BUFSZ-(int)tamanhoMensagem-1, 0);
+            if(tamanhoLidoAgora == 0) {
+                break;
+            }
+            tamanhoMensagem += tamanhoLidoAgora;
+        }
+        mensagem[tamanhoMensagem] = '\0';
+
+		printf("%s", mensagem);
 	}
-
-	struct sockaddr *enderecoSocket = (struct sockaddr *)(&dadosSocket);
-	if(connect(s, enderecoSocket, sizeof(dadosSocket)) != 0) {
-		sairComMensagem("Erro ao conectar no servidor");
-	}
-
-	char enderecoStr[BUFSZ];
-	converterEnderecoParaString(enderecoSocket, enderecoStr, BUFSZ);
-
-	printf("Conectado ao endereco %s\n", enderecoStr);
-
-
-	// char buf[BUFSZ];
-	// memset(buf, 0, BUFSZ);
-	// printf("mensagem> ");
-	// fgets(buf, BUFSZ-1, stdin);
-	// size_t count = send(s, buf, strlen(buf)+1, 0);
-	// if (count != strlen(buf)+1) {
-	// 	sairComMensagem("send");
-	// }
-
-	// memset(buf, 0, BUFSZ);
-	// unsigned total = 0;
-	// while(1) {
-	// 	count = recv(s, buf + total, BUFSZ - total, 0);
-	// 	if (count == 0) {
-	// 		// Connection terminated.
-	// 		break;
-	// 	}
-	// 	total += count;
-	// }
-	// close(s);
-
-	// printf("received %u bytes\n", total);
-	// puts(buf);
 
 	exit(EXIT_SUCCESS);
 }

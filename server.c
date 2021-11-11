@@ -191,10 +191,15 @@ int main(int argc, char** argv) {
         size_t tamanhoMensagem = 0;
         // Lê enquanto não terminar com \n
         while(mensagem[strlen(mensagem)-1] != '\n') {
-            tamanhoMensagem+= recv(socketCliente, mensagem+tamanhoMensagem, BUFSZ-(int)tamanhoMensagem-1, 0);
+            size_t tamanhoLidoAgora = recv(socketCliente, mensagem+tamanhoMensagem, BUFSZ-(int)tamanhoMensagem-1, 0);
+            if(tamanhoLidoAgora == 0) {
+                break;
+            }
+            tamanhoMensagem += tamanhoLidoAgora;
         }
         mensagem[tamanhoMensagem] = '\0';
-    
+
+        // TODO: Alterar para imprimir apenas a mensagem
         printf("Recebido %d bytes: %s\n", enderecoClienteStr, (int)tamanhoMensagem, mensagem)
 
         if(mensagemInvalida(mensagem)) {
