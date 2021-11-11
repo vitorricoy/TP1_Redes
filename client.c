@@ -7,7 +7,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-#define BUFSZ 1024
+#define BUFSZ 512
 
 void tratarParametroIncorreto(char* comandoPrograma) {
     printf("Uso: %s <ip do servidor> <porta do servidor>\n", comandoPrograma);
@@ -76,6 +76,7 @@ int main(int argc, char **argv) {
 	converterEnderecoParaString(enderecoSocket, enderecoStr, BUFSZ);
 
 	printf("Conectado ao endereco %s\n", enderecoStr);
+
 
 	// char buf[BUFSZ];
 	// memset(buf, 0, BUFSZ);
