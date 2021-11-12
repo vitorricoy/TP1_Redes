@@ -55,20 +55,18 @@ void inicializarDadosSocket(const char *enderecoStr, const char *portaStr, struc
 }
 
 
-int main(int argc, char **argv) {
-
-	verificarParametros(argc, argv);
-    struct sockaddr_storage dadosSocket;
-    inicializarDadosSocket(argv[1], argv[2], &dadosSocket, argv[0]);
-
+int inicializarSocketCliente(struct sockaddr_storage* dadosSocket) {
     int socketCliente;
-    socketCliente = socket(dadosSocket.ss_family, SOCK_STREAM, 0);
+    socketCliente = socket(dadosSocket->ss_family, SOCK_STREAM, 0);
     if(socketCliente == -1) {
         sairComMensagem("Erro ao iniciar o socket");
     }
+    return socketCliente;
+}
 
-    struct sockaddr *enderecoSocket = (struct sockaddr*)(&dadosSocket);
-    if(connect(socketCliente, enderecoSocket, sizeof(dadosSocket)) != 0) {
+void conectarAoServidor(struct sockaddr_storage* dadosSocket, int socketCliente) {
+    struct sockaddr *enderecoSocket = (struct sockaddr*)(dadosSocket);
+    if(connect(socketCliente, enderecoSocket, sizeof(*dadosSocket)) != 0) {
         sairComMensagem("Erro ao conectar no servidor");
     }
 
@@ -76,41 +74,65 @@ int main(int argc, char **argv) {
     converterEnderecoParaString(enderecoSocket, enderecoStr, BUFSZ);
 
     printf("Conectado ao endereco %s\n", enderecoStr);
+}
 
-    char mensagem[BUFSZ];
+void leMensagemEntrada(char mensagem[BUFSZ]) {
     memset(mensagem, 0, sizeof(mensagem));
-    while(1) {
-        fgets(mensagem, BUFSZ-1, stdin);
-        if(mensagem[strlen(mensagem)-1] != '\n') {
-            strcat(mensagem, "\n");
-        }
-        size_t tamanhoMensagemEnviada = send(socketCliente, mensagem, strlen(mensagem), 0);
-
-        if (strlen(mensagem) != tamanhoMensagemEnviada) {
-            sairComMensagem("Erro ao enviar mensagem");
-        }
-
-        memset(mensagem, 0, BUFSZ);
-        size_t tamanhoMensagem = 0;
-        // Lê enquanto não terminar com \n
-        do {
-            size_t tamanhoLidoAgora = recv(socketCliente, mensagem+tamanhoMensagem, BUFSZ-(int)tamanhoMensagem-1, 0);
-            if(tamanhoLidoAgora == 0) {
-                break;
-            }
-            tamanhoMensagem += tamanhoLidoAgora;
-        }while(mensagem[strlen(mensagem)-1] != '\n');
-
-        mensagem[tamanhoMensagem] = '\0';
-
-        if(strlen(mensagem) == 0) {
-            // Conexão caiu
-            exit(EXIT_SUCCESS);
-        }
-
-        printf("%s", mensagem);
-        memset(mensagem, 0, sizeof(mensagem));
+    fgets(mensagem, BUFSZ-1, stdin);
+    if(mensagem[strlen(mensagem)-1] != '\n') {
+        strcat(mensagem, "\n");
     }
-    send(socketCliente, "disconnect\n", 11, 0);
+}
+
+void enviaMensagemServidor(int socketCliente, char mensagem[BUFSZ]) {
+    size_t tamanhoMensagemEnviada = send(socketCliente, mensagem, strlen(mensagem), 0);
+    if (strlen(mensagem) != tamanhoMensagemEnviada) {
+        sairComMensagem("Erro ao enviar mensagem");
+    }
+}
+
+void recebeMensagemServidor(int socketCliente, char mensagem[BUFSZ]) {
+    memset(mensagem, 0, BUFSZ);
+    size_t tamanhoMensagem = 0;
+    // Lê enquanto não terminar com \n
+    do {
+        size_t tamanhoLidoAgora = recv(socketCliente, mensagem+tamanhoMensagem, BUFSZ-(int)tamanhoMensagem-1, 0);
+        if(tamanhoLidoAgora == 0) {
+            break;
+        }
+        tamanhoMensagem += tamanhoLidoAgora;
+    }while(mensagem[strlen(mensagem)-1] != '\n');
+
+    mensagem[tamanhoMensagem] = '\0';
+
+    if(strlen(mensagem) == 0) {
+        // Conexão caiu
+        exit(EXIT_SUCCESS);
+    }
+}
+
+void comunicarComServidor(int socketCliente) {
+    char mensagem[BUFSZ];
+    while(1) {
+        leMensagemEntrada(mensagem);
+        enviaMensagemServidor(socketCliente, mensagem);
+        recebeMensagemServidor(socketCliente, mensagem);
+        printf("%s", mensagem);
+    }
+}
+
+int main(int argc, char **argv) {
+	
+    verificarParametros(argc, argv);
+
+    struct sockaddr_storage dadosSocket;
+    inicializarDadosSocket(argv[1], argv[2], &dadosSocket, argv[0]);
+
+    int socketCliente = inicializarSocketCliente(&dadosSocket);
+
+    conectarAoServidor(&dadosSocket, socketCliente);
+
+    comunicarComServidor(socketCliente);
+    
 	exit(EXIT_SUCCESS);
 }

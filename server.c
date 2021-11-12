@@ -223,10 +223,6 @@ int main(int argc, char** argv) {
 
             printf("Mensagem valida\n");
 
-            if(strcmp(mensagem, "disconnect\n") == 0) {
-                break;
-            }
-
             int errouComando = 0;
 
             char *p;
