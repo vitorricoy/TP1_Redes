@@ -205,6 +205,11 @@ int main(int argc, char** argv) {
 
             mensagem[tamanhoMensagem] = '\0';
 
+            if(tamanhoMensagem == 0) {
+                // Cliente caiu
+                break;
+            }
+
             // TODO: Alterar para imprimir apenas a mensagem
             printf("Recebido %d bytes: %s\n", (int)tamanhoMensagem, mensagem);
 

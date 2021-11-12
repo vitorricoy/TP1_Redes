@@ -100,6 +100,11 @@ int main(int argc, char **argv) {
 
         mensagem[tamanhoMensagem] = '\0';
 
+        if(tamanhoMensagem == 0) {
+            // Conexão caiu
+            exit(EXIT_SUCCESS);
+        }
+
         printf("%s", mensagem);
         memset(mensagem, 0, sizeof(mensagem));
     }
