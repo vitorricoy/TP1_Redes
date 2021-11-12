@@ -79,8 +79,8 @@ int main(int argc, char **argv) {
 
     char mensagem[BUFSZ];
     memset(mensagem, 0, sizeof(mensagem));
-    while(fgets(mensagem, BUFSZ-1, stdin) != NULL) {
-        strcat(mensagem, "\n");
+    while(1) {
+        fgets(mensagem, BUFSZ-1, stdin);
         size_t tamanhoMensagemEnviada = send(socketCliente, mensagem, strlen(mensagem), 0);
 
         if (strlen(mensagem) != tamanhoMensagemEnviada) {

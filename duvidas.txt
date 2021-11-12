@@ -1,4 +1,4 @@
-O servidor precisa imprimir apenas as mensagens recebidas? (especificar o que imprime, mas a princípio é isso)
+O servidor precisa imprimir apenas as mensagens recebidas? (especificar o que imprime, mas a princípio é isso) OK
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -6,41 +6,37 @@ O que fazer caso o cliente envie multiplas mensagens em pacotes separados? Por e
 "add charma" "nder\nadd p" "ikachu\n"
 
 Devo parar ao receber "add charmander\n" ou devo detectar que existe mais coisa depois do \n e continuar recebendo as mensagens?
-(especificar na doc e comentários)
+(especificar na doc e comentários) OK
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 No caso de eu enviar algo como "add pikachu aaaaaaaaaaa charmander\n" devo dar sucesso para o pikachu, erro para o segundo devido ao tamanho > 10 e sucesso para o charmander?
-(especificar na documentação que é assim, mas foi confirmado na aula)
+(especificar na documentação que é assim, mas foi confirmado na aula) OK
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Se mandar adicionar mais de um e a pokedex estiver cheia eu imprimo várias mensagens de pokedex cheia? (especificar isso na doc e foi confirmado)
+Se mandar adicionar mais de um e a pokedex estiver cheia eu imprimo várias mensagens de pokedex cheia? (especificar isso na doc e foi confirmado) OK
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-O list printa na ordem de inserção? (sim)
+O list printa na ordem de inserção? (sim) OK
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Caso a mensagem seja invalida mas processável como "exchange pikachu charmander squirtle\n" devo processá-la como se fosse "exchange pikachu charmander\n" ou devo dar erro de mensagem
-inválida (documentar que considerou que isso não acontece, de acordo com a aula)
+inválida (documentar que considerou que isso não acontece, de acordo com a aula) OK
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-O cliente não pode enviar letras maiusculas? Porque tem uma orientação para enviar apenas espaços e alfanumericos e outra que só pode letras minusculas
+A lista de adicionados pode terminar com um espaço? Ex.: "pikachu added raichu added \n" mesma coisa para o list (não pode, arrumar no código) TODO
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-A lista de adicionados pode terminar com um espaço? Ex.: "pikachu added raichu added \n" mesma coisa para o list (não pode, arrumar no código)
+Como devemos saber que a entrada de um cliente acabou? (Não sabe, ele só para quando recebe um kill ou o servidor para. Especificar isso na doc) OK
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Como devemos saber que a entrada de um cliente acabou? (Não sabe, ele só para quando recebe um kill ou o servidor para. Especificar isso na doc)
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Mensagens com vários \n começam com espaço (especificar na doc e corrigir no código)
+Mensagens com vários \n começam com espaço (especificar na doc e corrigir no código) TODO (após ela postar os testes)
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -48,4 +44,4 @@ Avisar que não colocou < > no cliente na doc
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Comando escrito errado só fecha a conexão do cliente, sem mandar mensagem de resposta nem dar log. Cliente sai também.
+Comando escrito errado só fecha a conexão do cliente, sem mandar mensagem de resposta nem dar log. Cliente sai também. (OK - Testar)

@@ -227,6 +227,8 @@ int main(int argc, char** argv) {
                 break;
             }
 
+            int errouComando = 0;
+
             char *p;
             for(p = strtok(mensagem, "\n"); p != NULL; p = strtok(NULL, "\n")) {
                 char operacao[BUFSZ];
@@ -369,13 +371,12 @@ int main(int argc, char** argv) {
                     recebeuMensagemEncerramento = 1;
                     break;
                 } else {
-                    // Envia erro de mensagem invalida
-                    char resposta[BUFSZ+20];
-                    strcpy(resposta, "invalid message");
-                    enviarMensagem(resposta, socketCliente);
+                    // Comando errado
+                    errouComando = 1;
+                    break;
                 }
             }
-            if(recebeuMensagemEncerramento) {
+            if(recebeuMensagemEncerramento || errouComando) {
                 break;
             }
         }
