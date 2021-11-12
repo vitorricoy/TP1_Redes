@@ -1,0 +1,6 @@
+add pikachu raichu
+exchange snorlax bulbasaur
+exchange pikachu bulbasaur
+list
+add ho-oh
+add eevee bulbasaur

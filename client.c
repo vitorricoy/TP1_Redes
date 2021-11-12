@@ -58,49 +58,51 @@ void inicializarDadosSocket(const char *enderecoStr, const char *portaStr, struc
 int main(int argc, char **argv) {
 
 	verificarParametros(argc, argv);
+    struct sockaddr_storage dadosSocket;
+    inicializarDadosSocket(argv[1], argv[2], &dadosSocket, argv[0]);
 
-	while(1) {
-		struct sockaddr_storage dadosSocket;
-		inicializarDadosSocket(argv[1], argv[2], &dadosSocket, argv[0]);
+    int socketCliente;
+    socketCliente = socket(dadosSocket.ss_family, SOCK_STREAM, 0);
+    if(socketCliente == -1) {
+        sairComMensagem("Erro ao iniciar o socket");
+    }
 
-		int socketCliente;
-		socketCliente = socket(dadosSocket.ss_family, SOCK_STREAM, 0);
-		if(socketCliente == -1) {
-			sairComMensagem("Erro ao iniciar o socket");
-		}
+    struct sockaddr *enderecoSocket = (struct sockaddr*)(&dadosSocket);
+    if(connect(socketCliente, enderecoSocket, sizeof(dadosSocket)) != 0) {
+        sairComMensagem("Erro ao conectar no servidor");
+    }
 
-		struct sockaddr *enderecoSocket = (struct sockaddr*)(&dadosSocket);
-		if(connect(socketCliente, enderecoSocket, sizeof(dadosSocket)) != 0) {
-			sairComMensagem("Erro ao conectar no servidor");
-		}
+    char enderecoStr[BUFSZ];
+    converterEnderecoParaString(enderecoSocket, enderecoStr, BUFSZ);
 
-		char enderecoStr[BUFSZ];
-		converterEnderecoParaString(enderecoSocket, enderecoStr, BUFSZ);
+    printf("Conectado ao endereco %s\n", enderecoStr);
 
-		printf("Conectado ao endereco %s\n", enderecoStr);
+    char mensagem[BUFSZ];
+    memset(mensagem, 0, sizeof(mensagem));
+    while(fgets(mensagem, BUFSZ-1, stdin) != NULL) {
+        strcat(mensagem, "\n");
+        size_t tamanhoMensagemEnviada = send(socketCliente, mensagem, strlen(mensagem), 0);
 
-		char mensagem[BUFSZ];
-		memset(mensagem, 0, sizeof(mensagem));
-		fgets(mensagem, BUFSZ-1, stdin);
-		size_t tamanhoMensagemEnviada = send(socketCliente, mensagem, strlen(mensagem)+1, 0);
+        if (strlen(mensagem) != tamanhoMensagemEnviada) {
+            sairComMensagem("Erro ao enviar mensagem");
+        }
 
-		if (strlen(mensagem) != tamanhoMensagemEnviada) {
-			sairComMensagem("Erro ao enviar mensagem");
-		}
-
-        memset(mensagem, 0, sizeof(mensagem));
+        memset(mensagem, 0, BUFSZ);
         size_t tamanhoMensagem = 0;
-        while(1) {
+        // Lê enquanto não terminar com \n
+        do {
             size_t tamanhoLidoAgora = recv(socketCliente, mensagem+tamanhoMensagem, BUFSZ-(int)tamanhoMensagem-1, 0);
             if(tamanhoLidoAgora == 0) {
                 break;
             }
             tamanhoMensagem += tamanhoLidoAgora;
-        }
+        }while(mensagem[strlen(mensagem)-1] != '\n');
+
         mensagem[tamanhoMensagem] = '\0';
 
-		printf("%s", mensagem);
-	}
-
+        printf("%s", mensagem);
+        memset(mensagem, 0, sizeof(mensagem));
+    }
+    send(socketCliente, "disconnect\n", 11, 0);
 	exit(EXIT_SUCCESS);
 }

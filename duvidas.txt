@@ -34,4 +34,4 @@ A lista de adicionados pode terminar com um espaço? Ex.: "pikachu added raichu 
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-O cliente pode se desconectar do servidor a cada mensagem ou é um requisito que a mesma conexão seja mantida?
+Como devemos saber que a entrada de um cliente acabou?
