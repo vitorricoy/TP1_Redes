@@ -338,18 +338,27 @@ int main(int argc, char** argv) {
                         continue;
                     }
                     p = extrairStringAteEspacoRetornaStringDepoisDoEspaço(p, newPokemon);
-                    int posicaoPokemon = buscarPokemon(pokedex, oldPokemon, &proximaPosicaoPokedex);
-                    if(posicaoPokemon != -1) {
-                        strcpy(pokedex[posicaoPokemon], newPokemon);
+                    int posicaoPokemonOld = buscarPokemon(pokedex, oldPokemon, &proximaPosicaoPokedex);
+                    int posicaoPokemonNew = buscarPokemon(pokedex, newPokemon, &proximaPosicaoPokedex);
+                    if(posicaoPokemonOld != -1 && posicaoPokemonNew == -1) {
+                        strcpy(pokedex[posicaoPokemonOld], newPokemon);
                         // Enviar mensagem de troca
                         char resposta[BUFSZ+20];
                         sprintf(resposta, "%s exchanged", oldPokemon);
                         enviarMensagem(resposta, socketCliente);
                     } else {
-                        // Enviar erro de pokemon inexistente
-                        char resposta[BUFSZ+20];
-                        sprintf(resposta, "%s does not exist", oldPokemon);
-                        enviarMensagem(resposta, socketCliente);
+                        if(posicaoPokemonNew == -1) {
+                            // Enviar erro de pokemon inexistente
+                            char resposta[BUFSZ+20];
+                            sprintf(resposta, "%s does not exist", oldPokemon);
+                            enviarMensagem(resposta, socketCliente);
+                        } else {
+                            // Enviar erro pokemon existente
+                            char resposta[BUFSZ+20];
+                            sprintf(resposta, "%s already exists", pokemon);
+                            strcat(mensagemResposta, resposta);
+                            strcat(mensagemResposta, " ");
+                        }
                     }
                 } else if(strcmp(operacao, "kill") == 0) {
                     recebeuMensagemEncerramento = 1;

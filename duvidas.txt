@@ -6,14 +6,16 @@ O que fazer caso o cliente envie multiplas mensagens em pacotes separados? Por e
 "add charma" "nder\nadd p" "ikachu\n"
 
 Devo parar ao receber "add charmander\n" ou devo detectar que existe mais coisa depois do \n e continuar recebendo as mensagens?
+(especificar na doc e comentários)
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 No caso de eu enviar algo como "add pikachu aaaaaaaaaaa charmander\n" devo dar sucesso para o pikachu, erro para o segundo devido ao tamanho > 10 e sucesso para o charmander?
+(especificar na documentação)
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Se mandar adicionar mais de um e a pokedex estiver cheia eu imprimo várias mensagens de pokedex cheia?
+Se mandar adicionar mais de um e a pokedex estiver cheia eu imprimo várias mensagens de pokedex cheia? (especificar isso na doc)
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
