@@ -81,6 +81,9 @@ int main(int argc, char **argv) {
     memset(mensagem, 0, sizeof(mensagem));
     while(1) {
         fgets(mensagem, BUFSZ-1, stdin);
+        if(mensagem[strlen(mensagem)-1] != '\n') {
+            strcat(mensagem, "\n");
+        }
         size_t tamanhoMensagemEnviada = send(socketCliente, mensagem, strlen(mensagem), 0);
 
         if (strlen(mensagem) != tamanhoMensagemEnviada) {
@@ -100,7 +103,7 @@ int main(int argc, char **argv) {
 
         mensagem[tamanhoMensagem] = '\0';
 
-        if(tamanhoMensagem == 0) {
+        if(strlen(mensagem) == 0) {
             // Conexão caiu
             exit(EXIT_SUCCESS);
         }

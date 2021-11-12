@@ -362,9 +362,8 @@ int main(int argc, char** argv) {
                         } else {
                             // Enviar erro pokemon existente
                             char resposta[BUFSZ+20];
-                            sprintf(resposta, "%s already exists", pokemon);
-                            strcat(mensagemResposta, resposta);
-                            strcat(mensagemResposta, " ");
+                            sprintf(resposta, "%s already exists", newPokemon);
+                            enviarMensagem(resposta, socketCliente);
                         }
                     }
                 } else if(strcmp(operacao, "kill") == 0) {
