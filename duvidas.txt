@@ -47,3 +47,5 @@ Mensagens com vários \n começam com espaço (especificar na doc e corrigir no 
 Avisar que não colocou < > no cliente na doc
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Comando escrito errado só fecha a conexão do cliente, sem mandar mensagem de resposta nem dar log. Cliente sai também.
