@@ -160,11 +160,11 @@ int main(int argc, char** argv) {
 
     struct sockaddr *enderecoSocket = (struct sockaddr*)(&dadosSocket);
 
-    if(bind(socket, enderecoSocket, sizeof(dadosSocket)) != 0) {
+    if(bind(socketServidor, enderecoSocket, sizeof(dadosSocket)) != 0) {
         sairComMensagem("Erro ao dar bind no endereço e porta para o socket");
     }
 
-    if(listen(socket, 100) != 0) {
+    if(listen(socketServidor, 100) != 0) {
         sairComMensagem("Erro ao escutar por conexoes no servidor");
     }
 
@@ -208,7 +208,7 @@ int main(int argc, char** argv) {
 
         if(mensagemInvalida(mensagem)) {
             // Envia erro de mensagem invalida
-            char resposta[BUFSZ];
+            char resposta[BUFSZ+20];
             strcpy(resposta, "invalid message");
             enviarMensagem(resposta, socketCliente);
         }
@@ -219,7 +219,7 @@ int main(int argc, char** argv) {
             char operacao[BUFSZ];
             if(p == NULL) {
                 // Envia erro de mensagem invalida
-                char resposta[BUFSZ];
+                char resposta[BUFSZ+20];
                 strcpy(resposta, "invalid message");
                 enviarMensagem(resposta, socketCliente);
                 continue;
@@ -236,7 +236,7 @@ int main(int argc, char** argv) {
                     p = extrairStringAteEspacoRetornaStringDepoisDoEspaço(p, pokemon);
                     if(strlen(pokemon) > 10) {
                         // Envia erro de mensagem invalida
-                        char resposta[BUFSZ];
+                        char resposta[BUFSZ+20];
                         strcpy(resposta, "invalid message");
                         strcat(mensagemResposta, resposta);
                         strcat(mensagemResposta, " ");
@@ -244,20 +244,20 @@ int main(int argc, char** argv) {
                         if(buscarPokemon(pokedex, pokemon, &proximaPosicaoPokedex) == -1) {
                             if(adicionarPokemon(pokedex, pokemon, &proximaPosicaoPokedex) == -1) {
                                 // Enviar mensagem pokedex cheia
-                                char resposta[BUFSZ];
+                                char resposta[BUFSZ+20];
                                 strcpy(resposta, "limit exceeded");
                                 strcat(mensagemResposta, resposta);
                                 strcat(mensagemResposta, " ");
                             } else {
                                 // Enviar mensagem pokemon adicionado
-                                char resposta[BUFSZ];
+                                char resposta[BUFSZ+20];
                                 sprintf(resposta, "%s added", pokemon);
                                 strcat(mensagemResposta, resposta);
                                 strcat(mensagemResposta, " ");
                             }
                         } else {
                             // Enviar erro pokemon existente
-                            char resposta[BUFSZ];
+                            char resposta[BUFSZ+20];
                             sprintf(resposta, "%s already exists", pokemon);
                             strcat(mensagemResposta, resposta);
                             strcat(mensagemResposta, " ");
@@ -266,7 +266,7 @@ int main(int argc, char** argv) {
                 }
                 if(!entrouUmaVez) {
                     // Envia erro de mensagem invalida
-                    char resposta[BUFSZ];
+                    char resposta[BUFSZ+20];
                     strcpy(resposta, "invalid message");
                     strcat(mensagemResposta, resposta);
                     strcat(mensagemResposta, " ");
@@ -277,7 +277,7 @@ int main(int argc, char** argv) {
                 memset(pokemon, 0, sizeof(pokemon));
                 if(p == NULL) {
                     // Envia erro de mensagem invalida
-                    char resposta[BUFSZ];
+                    char resposta[BUFSZ+20];
                     strcpy(resposta, "invalid message");
                     enviarMensagem(resposta, socketCliente);
                     continue;
@@ -285,7 +285,7 @@ int main(int argc, char** argv) {
                 p = extrairStringAteEspacoRetornaStringDepoisDoEspaço(p, pokemon);
                 if(strlen(pokemon) > 10) {
                     // Envia erro de mensagem invalida
-                    char resposta[BUFSZ];
+                    char resposta[BUFSZ+20];
                     strcpy(resposta, "invalid message");
                     enviarMensagem(resposta, socketCliente);
                 } else {
@@ -293,12 +293,12 @@ int main(int argc, char** argv) {
                     if(posicaoPokemon != -1) {
                         removerPokemon(pokedex, posicaoPokemon, &proximaPosicaoPokedex);
                         // Enviar mensagem pokemon removido
-                        char resposta[BUFSZ];
+                        char resposta[BUFSZ+20];
                         sprintf(resposta, "%s removed", pokemon);
                         enviarMensagem(resposta, socketCliente);
                     } else {
                         // Enviar erro de pokemon inexistente
-                        char resposta[BUFSZ];
+                        char resposta[BUFSZ+20];
                         sprintf(resposta, "%s does not exist", pokemon);
                         enviarMensagem(resposta, socketCliente);
                     }
@@ -315,7 +315,7 @@ int main(int argc, char** argv) {
                 memset(newPokemon, 0, sizeof(newPokemon));
                 if(p == NULL) {
                     // Envia erro de mensagem invalida
-                    char resposta[BUFSZ];
+                    char resposta[BUFSZ+20];
                     strcpy(resposta, "invalid message");
                     enviarMensagem(resposta, socketCliente);
                     continue;
@@ -323,7 +323,7 @@ int main(int argc, char** argv) {
                 p = extrairStringAteEspacoRetornaStringDepoisDoEspaço(p, oldPokemon);
                 if(p == NULL) {
                     // Envia erro de mensagem invalida
-                    char resposta[BUFSZ];
+                    char resposta[BUFSZ+20];
                     strcpy(resposta, "invalid message");
                     enviarMensagem(resposta, socketCliente);
                     continue;
@@ -333,12 +333,12 @@ int main(int argc, char** argv) {
                 if(posicaoPokemon != -1) {
                     pokedex[posicaoPokemon] = newPokemon;
                     // Enviar mensagem de troca
-                    char resposta[BUFSZ];
+                    char resposta[BUFSZ+20];
                     sprintf(resposta, "%s exchanged", oldPokemon);
                     enviarMensagem(resposta, socketCliente);
                 } else {
                     // Enviar erro de pokemon inexistente
-                    char resposta[BUFSZ];
+                    char resposta[BUFSZ+20];
                     sprintf(resposta, "%s does not exist", oldPokemon);
                     enviarMensagem(resposta, socketCliente);
                 }
@@ -347,7 +347,7 @@ int main(int argc, char** argv) {
                 break;
             } else {
                 // Envia erro de mensagem invalida
-                char resposta[BUFSZ];
+                char resposta[BUFSZ+20];
                 strcpy(resposta, "invalid message");
                 enviarMensagem(resposta, socketCliente);
             }

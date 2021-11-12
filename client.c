@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
 		char mensagem[BUFSZ];
 		memset(mensagem, 0, sizeof(mensagem));
 		fgets(mensagem, BUFSZ-1, stdin);
-		size_t tamanhoMensagemEnviada = send(socket, mensagem, strlen(mensagem)+1, 0);
+		size_t tamanhoMensagemEnviada = send(socketCliente, mensagem, strlen(mensagem)+1, 0);
 
 		if (strlen(mensagem) != tamanhoMensagemEnviada) {
 			sairComMensagem("Erro ao enviar mensagem");
