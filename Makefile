@@ -1,7 +1,7 @@
 all:
 	gcc -Wall -c common.c
-	gcc -Wall cliente.c -g common.o -o cliente
-	gcc -Wall servidor.c -g common.o -o servidor
+	gcc -Wall client.c -g common.o -o client
+	gcc -Wall server.c -g common.o -o server
 
 clean:
-	rm common.o cliente servidor
+	rm common.o client server
