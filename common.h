@@ -4,6 +4,8 @@
 
 #include <arpa/inet.h>
 
-void sairComMensagem(const char *msg);
+// Encerra o programa com a mensagem 'msg'
+void sairComMensagem(char *msg);
 
-void converterEnderecoParaString(const struct sockaddr *endereco, char *string, size_t tamanhoString);
+// Converte um endereço de socket para string
+void converterEnderecoParaString(struct sockaddr *endereco, char *string, size_t tamanhoString);

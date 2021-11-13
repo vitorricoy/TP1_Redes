@@ -10,7 +10,7 @@ int proximaPosicao = 0;
 
 // Considera que ja fez a busca antes
 int adicionarPokemon(char* pokemon) {
-    if(proximaPosicao == TAM_POKEDEX) {
+    if(proximaPosicao == TAM_POKEDEX) { // Pokedex cheia
         return -1;
     }
     strcpy(pokedex[proximaPosicao], pokemon);
@@ -18,7 +18,7 @@ int adicionarPokemon(char* pokemon) {
     return 0;
 }
 
-// Considera que ja fez a busca antes
+// Considera que ja fez a busca antes, portanto 'posicaoPokemon' é uma posição válida
 void removerPokemon(int posicaoPokemon) {
     proximaPosicao--;
     int posicao;
@@ -34,11 +34,11 @@ int buscarPokemon(char* pokemon) {
             return posicao;
         }
     }
-    return -1;
+    return -1; // Pokemon não encontrado
 }
 
 void listarPokemon(char* dest) {
-    if(proximaPosicao == 0) {
+    if(proximaPosicao == 0) { // Se a pokedex está vazia retorna 'none'
         strcpy(dest, "none");
         return;
     }
@@ -46,6 +46,7 @@ void listarPokemon(char* dest) {
     int posicaoDest = 0;
     for(posicao = 0; posicao < proximaPosicao; posicao++) {
         int tamPokemon = strlen(pokedex[posicao]);
+        // Copia o nome do pokemon para 'dest' seguido de um espaço
         int posicaoPokemon;
         for(posicaoPokemon = 0; posicaoPokemon < tamPokemon; posicaoPokemon++) {
             dest[posicaoDest] = pokedex[posicao][posicaoPokemon];
@@ -54,10 +55,11 @@ void listarPokemon(char* dest) {
         dest[posicaoDest] = ' ';
         posicaoDest++;
     }
-    dest[posicaoDest-1] = '\0'; // Ignora ultimo espaço
+    // Remove o último espaço adicionado
+    dest[posicaoDest-1] = '\0';
 }
 
-// Considera que ja fez a busca antes
+// Considera que ja fez a busca antes, portanto 'posicao' é uma posição válida
 void substituirPokemon(int posicao, char* pokemon) {
     strcpy(pokedex[posicao], pokemon);
 }
