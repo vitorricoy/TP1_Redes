@@ -77,7 +77,7 @@ void conectarAoServidor(struct sockaddr_storage* dadosSocket, int socketCliente)
 }
 
 void leMensagemEntrada(char mensagem[BUFSZ]) {
-    memset(mensagem, 0, sizeof(mensagem));
+    memset(mensagem, 0, sizeof(*mensagem));
     fgets(mensagem, BUFSZ-1, stdin);
     if(mensagem[strlen(mensagem)-1] != '\n') {
         strcat(mensagem, "\n");

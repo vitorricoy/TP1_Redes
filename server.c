@@ -160,7 +160,7 @@ void receberMensagem(int socketCliente, char mensagem[BUFSZ]) {
     mensagem[tamanhoMensagem] = '\0';
 }
 
-int verificarMensagemInvalida(char mensagem[BUFSZ]) {
+int verificarMensagemInvalida(int socketCliente, char mensagem[BUFSZ]) {
     if(mensagemInvalida(mensagem)) {
         // Envia erro de mensagem invalida
         char resposta[BUFSZ+20];
@@ -335,11 +335,10 @@ int tratarMensagemRecebida(char* mensagem, int socketCliente) {
     }
 }
 
-int tratarMensagensRecebidas(char mensagem[BUFSZ]) {
-    int errouComando = 0;
+int tratarMensagensRecebidas(char mensagem[BUFSZ], int socketCliente) {
     char *parteMensagem;
     for(parteMensagem = strtok(mensagem, "\n"); parteMensagem != NULL; parteMensagem = strtok(NULL, "\n")) {
-        int retorno = tratarMensagemRecebida(parteMensagem);
+        int retorno = tratarMensagemRecebida(parteMensagem, socketCliente);
         if(retorno == PROXIMA_COMUNICACAO || retorno == PROXIMO_CLIENTE || retorno == ENCERRAR) {
             return retorno;
         }
@@ -357,15 +356,15 @@ int receberETratarMensagemCliente(int socketCliente) {
     }
 
     // TODO: Alterar para imprimir apenas a mensagem
-    printf("Recebido %d bytes: %s\n", (int)tamanhoMensagem, mensagem);
+    printf("Recebido %d bytes: %s\n", (int)strlen(mensagem), mensagem);
 
-    if(verificarMensagemInvalida(mensagem) == 0) {
+    if(verificarMensagemInvalida(socketCliente, mensagem) == 0) {
         return PROXIMA_COMUNICACAO;
     }
 
     printf("Mensagem valida\n");
 
-    int retorno = tratarMensagensRecebidas(mensagem);
+    int retorno = tratarMensagensRecebidas(mensagem, socketCliente);
     
     if(retorno == ENCERRAR || retorno == PROXIMO_CLIENTE) {
         return retorno;
@@ -376,7 +375,6 @@ int receberETratarMensagemCliente(int socketCliente) {
 
 int tratarConexaoCliente(int socketServidor) {
     int socketCliente = aceitarSocketCliente(socketServidor);
-    int recebeuMensagemEncerramento = 0;
     while(1) {
         int retorno = receberETratarMensagemCliente(socketCliente);
         if(retorno == PROXIMO_CLIENTE || retorno == ENCERRAR) {
