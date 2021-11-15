@@ -110,6 +110,9 @@ char* extrairStringAteEspaco(char* string, char* dest) {
 }
 
 int mensagemInvalida(char* mensagem) {
+    if(mensagem == NULL) {
+        return 0;
+    }
     int tamanhoMensagem = strlen(mensagem);
     int posicao;
     // Verifica se 'mensagem' consiste apenas de letras minúsculas, números, espaços e '\n's
@@ -351,30 +354,22 @@ int tratarMensagemRecebida(char* mensagem, int socketCliente) {
     // Extrai o comando da mensagem
     mensagem = extrairStringAteEspaco(mensagem, operacao);
     if(strcmp(operacao, "add") == 0) {
-        if(verificarMensagemInvalida(socketCliente, mensagem) == 0) { // Se a mensagem recebida é inválida, executa o próximo recv
-            // Identifica que o servidor deve receber o próximo recv do cliente
-            enviaErroMensagemInvalida(socketCliente);
+        if(verificarMensagemInvalida(socketCliente, mensagem) == 0) { // Se a mensagem recebida é inválida, trata a próxima mensagem
             return PROXIMA_MENSAGEM;
         }
         return processarAdd(mensagem, socketCliente);
     } else if(strcmp(operacao, "remove") == 0) {
-        if(verificarMensagemInvalida(socketCliente, mensagem) == 0) { // Se a mensagem recebida é inválida, executa o próximo recv
-            // Identifica que o servidor deve receber o próximo recv do cliente
-            enviaErroMensagemInvalida(socketCliente);
+        if(verificarMensagemInvalida(socketCliente, mensagem) == 0) { // Se a mensagem recebida é inválida, trata a próxima mensagem
             return PROXIMA_MENSAGEM;
         }
         return processarRemove(mensagem, socketCliente);
     } else if(strcmp(operacao, "list") == 0) {
-        if(verificarMensagemInvalida(socketCliente, mensagem) == 0) { // Se a mensagem recebida é inválida, executa o próximo recv
-            // Identifica que o servidor deve receber o próximo recv do cliente
-            enviaErroMensagemInvalida(socketCliente);
+        if(verificarMensagemInvalida(socketCliente, mensagem) == 0) { // Se a mensagem recebida é inválida, trata a próxima mensagem
             return PROXIMA_MENSAGEM;
         }
         return processarList(socketCliente);
     } else if(strcmp(operacao, "exchange") == 0) {
-        if(verificarMensagemInvalida(socketCliente, mensagem) == 0) { // Se a mensagem recebida é inválida, executa o próximo recv
-            // Identifica que o servidor deve receber o próximo recv do cliente
-            enviaErroMensagemInvalida(socketCliente);
+        if(verificarMensagemInvalida(socketCliente, mensagem) == 0) { // Se a mensagem recebida é inválida, trata a próxima mensagem
             return PROXIMA_MENSAGEM;
         }
         return processarExchange(mensagem, socketCliente);
