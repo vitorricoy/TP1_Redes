@@ -144,11 +144,6 @@ void escutarPorConexoes(int socketServidor, struct sockaddr_storage* dadosSocket
     if(listen(socketServidor, 100) != 0) {
         sairComMensagem("Erro ao escutar por conexoes no servidor");
     }
-
-    // Print de debug para indicar o sucesso do listen do servidor TODO
-    char enderecoStr[BUFSZ];    
-    converterEnderecoParaString(enderecoSocket, enderecoStr, BUFSZ);
-    printf("Escutando no endereço %s, esperando conexoes\n", enderecoStr);
 }
 
 int aceitarSocketCliente(int socketServidor) {
@@ -163,11 +158,6 @@ int aceitarSocketCliente(int socketServidor) {
     if(socketCliente == -1) {
         sairComMensagem("Erro ao aceitar a conexao de um cliente");
     }
-
-    // Print de debug para indicar a conexão de um cliente TODO
-    char enderecoClienteStr[BUFSZ];
-    converterEnderecoParaString(enderecoSocketCliente, enderecoClienteStr, BUFSZ);
-    printf("Conexão recebida de %s\n", enderecoClienteStr);
     return socketCliente;
 }
 
@@ -358,17 +348,35 @@ int tratarMensagemRecebida(char* mensagem, int socketCliente) {
         // Identifica que a próxima mensagem deve ser analisada
         return PROXIMA_MENSAGEM;
     }
-    // Mensagem de debug para indicar a mensagem sendo processada TODO
-    printf("Processando a mensagem %s\n", mensagem);
     // Extrai o comando da mensagem
     mensagem = extrairStringAteEspaco(mensagem, operacao);
     if(strcmp(operacao, "add") == 0) {
+        if(verificarMensagemInvalida(socketCliente, mensagem) == 0) { // Se a mensagem recebida é inválida, executa o próximo recv
+            // Identifica que o servidor deve receber o próximo recv do cliente
+            enviaErroMensagemInvalida(socketCliente);
+            return PROXIMA_MENSAGEM;
+        }
         return processarAdd(mensagem, socketCliente);
     } else if(strcmp(operacao, "remove") == 0) {
+        if(verificarMensagemInvalida(socketCliente, mensagem) == 0) { // Se a mensagem recebida é inválida, executa o próximo recv
+            // Identifica que o servidor deve receber o próximo recv do cliente
+            enviaErroMensagemInvalida(socketCliente);
+            return PROXIMA_MENSAGEM;
+        }
         return processarRemove(mensagem, socketCliente);
     } else if(strcmp(operacao, "list") == 0) {
+        if(verificarMensagemInvalida(socketCliente, mensagem) == 0) { // Se a mensagem recebida é inválida, executa o próximo recv
+            // Identifica que o servidor deve receber o próximo recv do cliente
+            enviaErroMensagemInvalida(socketCliente);
+            return PROXIMA_MENSAGEM;
+        }
         return processarList(socketCliente);
     } else if(strcmp(operacao, "exchange") == 0) {
+        if(verificarMensagemInvalida(socketCliente, mensagem) == 0) { // Se a mensagem recebida é inválida, executa o próximo recv
+            // Identifica que o servidor deve receber o próximo recv do cliente
+            enviaErroMensagemInvalida(socketCliente);
+            return PROXIMA_MENSAGEM;
+        }
         return processarExchange(mensagem, socketCliente);
     } else if(strcmp(operacao, "kill") == 0) {
         // Identifica que o servidor deve ser encerrado
@@ -399,14 +407,6 @@ int receberETratarMensagemCliente(int socketCliente) {
     if(strlen(mensagem) == 0) {
         // Identifica que o servidor deve se conectar com outro cliente
         return PROXIMO_CLIENTE;
-    }
-
-    // TODO: Alterar para imprimir apenas a mensagem
-    printf("Recebido %d bytes: %s\n", (int)strlen(mensagem), mensagem);
-
-    if(verificarMensagemInvalida(socketCliente, mensagem) == 0) { // Se a mensagem recebida é inválida, executa o próximo recv
-        // Identifica que o servidor deve receber o próximo recv do cliente
-        return PROXIMA_COMUNICACAO;
     }
 
     int retorno = tratarMensagensRecebidas(mensagem, socketCliente);
