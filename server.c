@@ -419,6 +419,8 @@ int tratarConexaoCliente(int socketServidor) {
     while(1) {
         int retorno = receberETratarMensagemCliente(socketCliente);
         if(retorno == PROXIMO_CLIENTE || retorno == ENCERRAR) { // Se o servidor deve encerrar ou se conectar com outro cliente
+            // Encerra a conexão com o cliente
+            close(socketCliente);
             return retorno;
         }
     }
